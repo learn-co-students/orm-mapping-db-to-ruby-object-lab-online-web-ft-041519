@@ -1,7 +1,6 @@
 class Student
   attr_accessor :id, :name, :grade
-  @@all = []
-  
+
   def self.new_from_db(row)
     student = self.new
     student.id = row[0]
@@ -66,7 +65,7 @@ class Student
       FROM students
       WHERE grade = 9 
     SQL
-    
+
     DB[:conn].execute(sql)
   end
   
@@ -77,7 +76,9 @@ class Student
       WHERE grade <= 11
     SQL
     
-    DB[:conn].execute(sql)
+    DB[:conn].execute(sql).map do |row|
+      self.new_from_db(row)
+    end
   end
   
   def self.first_X_students_in_grade_10(num)
@@ -96,10 +97,11 @@ class Student
       SELECT *
       FROM students
       WHERE grade = 10
-      LIMIT 1 
     SQL
     
-    DB[:conn].execute(sql)
+    DB[:conn].execute(sql).map do |row|
+      self.new_from_db(row)
+    end.first
   end
   
   def self.all_students_in_grade_X(grade)
@@ -111,6 +113,5 @@ class Student
     
     DB[:conn].execute(sql, grade)
   end
-  
   
 end
